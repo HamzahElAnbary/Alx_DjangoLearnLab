@@ -1,25 +1,48 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode files
 __pycache__/
 *.py[cod]
-*.sqlite3
+*$py.class
 
-# Django stuff:
-*.log
-*.pot
-*.pyc
-*.pyo
-*.db
-*.sqlite3
-
-# Environment
-.env
-venv/
+# Environment folders
 env/
+venv/
+ENV/
+.venv/
 
-# IDEs
+# Django specific
+*.sqlite3
+*.log
+media/
+staticfiles/
+
+# VSCode settings
 .vscode/
-.idea/
 
-# Mac/Windows
+# OS files
 .DS_Store
 Thumbs.db
+
+# PyCharm
+.idea/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Migrations (optional: usually you keep migrations, but sometimes ignored)
+# relationship_app/migrations/
+# bookshelf/migrations/
+
+# Byte-compiled / optimized / DLL files
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# If you have local settings
+local_settings.py
