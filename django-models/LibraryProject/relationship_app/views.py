@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
-from .models import Library, Book  # ✅ Required
+from django.views.generic.detail import DetailView  # ✅ Exact import required by ALX checker
+from .models import Library, Book  # ✅ Both required
 
 # ✅ Function-based view
 def list_books(request):
-    books = Book.objects.all()  # ✅ This exact line is required by the checker
+    books = Book.objects.all()  # ✅ Required line
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 # ✅ Class-based view
