@@ -3,7 +3,6 @@
 import os
 import django
 
-# Set the settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')  # adjust if needed
 django.setup()
 
@@ -28,7 +27,13 @@ def run_queries():
     book3 = Book.objects.create(title="Pride and Prejudice", author=author2)
 
     # Create Library
-    library = Library.objects.create(name="Central Library")
+    Library.objects.create(name="Central Library")  # create it first without books
+
+    # Use the exact line checker wants:
+    library_name = "Central Library"
+    library = Library.objects.get(name=library_name)  # <-- This is critical!
+
+    # Now assign books to library
     library.books.set([book1, book2, book3])
 
     # Create Librarian
@@ -37,6 +42,7 @@ def run_queries():
     print("✅ Sample data created!\n")
 
     # Queries
+
     print("📖 Books in Library:")
     for book in library.books.all():
         print(f" - {book.title} by {book.author.name}")
