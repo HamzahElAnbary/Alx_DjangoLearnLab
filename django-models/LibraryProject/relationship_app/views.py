@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.views.generic import DetailView
 from .models import Book, Library, UserProfile
+from django.core.exceptions import PermissionDenied
 
 # Book list function view
 def list_books(request):
@@ -39,7 +40,7 @@ def is_member(user):
     return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
 @login_required
-@user_passes_test(is_admin)
+@user_passes_test(is_admin, raise_exception=True)
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
