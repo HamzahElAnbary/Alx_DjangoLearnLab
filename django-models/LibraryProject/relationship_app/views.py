@@ -4,20 +4,19 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.views.generic import DetailView
 from .models import Book, Library, UserProfile
-from django.core.exceptions import PermissionDenied
 
-# Book list function view
+# Book list view
 def list_books(request):
     books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
-# Library detail class-based view
+# Library detail view
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-# Registration view
+# Register view
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -29,7 +28,7 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
-# Role checks
+# Role check functions
 def is_admin(user):
     return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
@@ -39,8 +38,9 @@ def is_librarian(user):
 def is_member(user):
     return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
+# Role-protected views
 @login_required
-@user_passes_test(is_admin, raise_exception=True)
+@user_passes_test(is_admin)
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
