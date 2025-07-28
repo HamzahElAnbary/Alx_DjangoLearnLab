@@ -1,35 +1,31 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Book
-from .forms import BookForm
+from .models import Article
+from django.contrib.auth.decorators import permission_required
 
-def book_list(request):
-    books = Book.objects.all()
-    return render(request, 'book_list.html', {'books': books})
+@permission_required('bookshelf.can_view', raise_exception=True)
+def article_list(request):
+    articles = Article.objects.all()
+    return render(request, 'bookshelf/article_list.html', {'articles': articles})
 
-def add_book(request):
+@permission_required('bookshelf.can_create', raise_exception=True)
+def article_create(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('book_list')
-    else:
-        form = BookForm()
-    return render(request, 'book_form.html', {'form': form})
+        # form processing here
+        pass
+    return render(request, 'bookshelf/article_form.html')
 
-def edit_book(request, pk):
-    book = get_object_or_404(Book, pk=pk)
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def article_edit(request, pk):
+    article = get_object_or_404(Article, pk=pk)
     if request.method == 'POST':
-        form = BookForm(request.POST, instance=book)
-        if form.is_valid():
-            form.save()
-            return redirect('book_list')
-    else:
-        form = BookForm(instance=book)
-    return render(request, 'book_form.html', {'form': form})
+        # form processing here
+        pass
+    return render(request, 'bookshelf/article_form.html', {'article': article})
 
-def delete_book(request, pk):
-    book = get_object_or_404(Book, pk=pk)
+@permission_required('bookshelf.can_delete', raise_exception=True)
+def article_delete(request, pk):
+    article = get_object_or_404(Article, pk=pk)
     if request.method == 'POST':
-        book.delete()
-        return redirect('book_list')
-    return render(request, 'book_confirm_delete.html', {'book': book})
+        article.delete()
+        return redirect('article_list')
+    return render(request, 'bookshelf/article_confirm_delete.html', {'article': article})
