@@ -64,3 +64,22 @@ class Book(models.Model):
             ("can_change_book", "Can change a book"),
             ("can_delete_book", "Can delete a book"),
         ]
+
+
+class Article(models.Model):
+    """
+    Article model with required custom permissions
+    """
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+
+    class Meta:
+        permissions = [
+            ("can_view", "Can view article"),
+            ("can_create", "Can create article"),
+            ("can_edit", "Can edit article"),
+            ("can_delete", "Can delete article"),
+        ]
+
+    def __str__(self):
+        return self.title
