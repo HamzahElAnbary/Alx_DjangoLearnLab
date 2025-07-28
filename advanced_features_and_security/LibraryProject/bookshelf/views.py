@@ -1,31 +1,35 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Article
 from django.contrib.auth.decorators import permission_required
+from .models import Book
 
 @permission_required('bookshelf.can_view', raise_exception=True)
-def article_list(request):
-    articles = Article.objects.all()
-    return render(request, 'bookshelf/article_list.html', {'articles': articles})
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'bookshelf/book_list.html', {'books': books})
 
-@permission_required('bookshelf.can_create', raise_exception=True)
-def article_create(request):
+@permission_required('bookshelf.can_add_book', raise_exception=True)
+def book_create(request):
     if request.method == 'POST':
-        # form processing here
-        pass
-    return render(request, 'bookshelf/article_form.html')
+        title = request.POST.get('title')
+        author = request.POST.get('author')
+        Book.objects.create(title=title, author=author)
+        return redirect('book_list')
+    return render(request, 'bookshelf/book_form.html')
 
-@permission_required('bookshelf.can_edit', raise_exception=True)
-def article_edit(request, pk):
-    article = get_object_or_404(Article, pk=pk)
+@permission_required('bookshelf.can_change_book', raise_exception=True)
+def book_edit(request, pk):
+    book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
-        # form processing here
-        pass
-    return render(request, 'bookshelf/article_form.html', {'article': article})
+        book.title = request.POST.get('title')
+        book.author = request.POST.get('author')
+        book.save()
+        return redirect('book_list')
+    return render(request, 'bookshelf/book_form.html', {'book': book})
 
-@permission_required('bookshelf.can_delete', raise_exception=True)
-def article_delete(request, pk):
-    article = get_object_or_404(Article, pk=pk)
+@permission_required('bookshelf.can_delete_book', raise_exception=True)
+def book_delete(request, pk):
+    book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
-        article.delete()
-        return redirect('article_list')
-    return render(request, 'bookshelf/article_confirm_delete.html', {'article': article})
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'bookshelf/book_confirm_delete.html', {'book': book})
