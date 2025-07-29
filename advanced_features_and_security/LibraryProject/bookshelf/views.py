@@ -18,7 +18,7 @@ def add_book(request):
             return redirect('book_list')
     else:
         form = BookForm()
-    return render(request, 'relationship_app/add_book.html', {'form': form})
+    return render(request, 'bookshelf/add_book.html', {'form': form})
 
 @login_required
 def edit_book(request, book_id):
@@ -31,3 +31,11 @@ def edit_book(request, book_id):
     else:
         form = BookForm(instance=book)
     return render(request, 'bookshelf/edit_book.html', {'form': form, 'book': book})
+
+@login_required
+def delete_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'bookshelf/confirm_delete.html', {'book': book})

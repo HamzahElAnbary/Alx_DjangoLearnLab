@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Book List</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library - Book List</title>
 </head>
 <body>
     <h1>Library - Book List</h1>
@@ -21,7 +23,9 @@
             <li>
                 <strong>{{ book.title|escape }}</strong><br>
                 Author: {{ book.author|escape }}<br>
-                Description: {{ book.description|linebreaksbr|escape }}
+                Description: {{ book.description|linebreaksbr|escape }}<br>
+                <a href="{% url 'edit_book' book.id %}">Edit</a> |
+                <a href="{% url 'delete_book' book.id %}">Delete</a>
             </li>
         {% empty %}
             <li>No books found.</li>

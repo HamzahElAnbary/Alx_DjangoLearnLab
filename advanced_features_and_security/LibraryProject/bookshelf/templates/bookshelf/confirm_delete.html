@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add New Book</title>
+    <title>Confirm Delete</title>
 </head>
 <body>
-    <h1>Add a New Book</h1>
+    <h1>Confirm Delete</h1>
+
+    <p>Are you sure you want to delete the book: <strong>{{ book.title|escape }}</strong>?</p>
 
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add Book</button>
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'book_list' %}">Cancel</a>
     </form>
-
-    <a href="{% url 'book_list' %}">Back to Book List</a>
 </body>
 </html>

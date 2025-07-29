@@ -3,5 +3,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('relationship_app.urls')),  # Include app's URLs
+
+    # Your app urls
+    path('', include('bookshelf.urls')),
+
+    # Add Django auth URLs for login/logout
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
