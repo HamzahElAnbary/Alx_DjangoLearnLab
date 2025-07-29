@@ -6,12 +6,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'  # Replace with your actual secret key
+SECRET_KEY = 'your-secret-key-here'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []  # Add your allowed hosts here
+
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -23,19 +25,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf',  # your app
-    'csp',        # django-csp app for Content Security Policy
+    'bookshelf',
+    'csp',  # django-csp app
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'csp.middleware.CSPMiddleware',  # Add CSP middleware here
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',  # Content Security Policy middleware
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -43,7 +45,7 @@ ROOT_URLCONF = 'LibraryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # if you use a global templates folder
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -60,9 +62,7 @@ WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# Example uses SQLite, adjust as needed
-
+# Replace with your actual database config if needed
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -72,7 +72,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -91,7 +90,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -103,33 +101,42 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # for production collectstatic
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Content Security Policy configuration (django-csp >= 4.0)
+# Custom User model (if you use one)
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+
+# Content Security Policy (django-csp) configuration
 
 CONTENT_SECURITY_POLICY = {
     'default-src': ["'self'"],
     'script-src': ["'self'"],
     'style-src': ["'self'", 'fonts.googleapis.com'],
     'font-src': ["'self'", 'fonts.gstatic.com'],
-    'img-src': ["'self'", 'data:'],
-    'connect-src': ["'self'"],
-    'frame-src': ["'none'"],
 }
 
 
-# If you have a custom user model (adjust if you do)
-# AUTH_USER_MODEL = 'bookshelf.CustomUser'
+# Security settings required by ALX checker
+
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# If you are running on HTTPS (production), enable these:
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# For local development with HTTP, you might comment out above two like this:
+# CSRF_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = False
