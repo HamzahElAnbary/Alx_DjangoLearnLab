@@ -1,31 +1,38 @@
-"""
-This module defines generic views for the Book model using Django REST Framework.
-
-- BookListCreateView: Handles GET (list) and POST (create) operations for books.
-- BookRetrieveUpdateDestroyView: Handles GET (detail), PUT/PATCH (update), and DELETE operations for a single book.
-- Permissions are applied to restrict write actions to authenticated users.
-"""
-
 from rest_framework import generics, permissions
 from .models import Book
 from .serializers import BookSerializer
 
-# View for listing all books (GET) and creating a book (POST)
-class BookListCreateView(generics.ListCreateAPIView):
+"""
+This module defines generic views for the Book model using Django REST Framework.
+
+- BookListView: Handles GET (list) and POST (create) operations for books.
+- BookDetailView: Handles GET (retrieve), PUT/PATCH (update), and DELETE operations for a single book.
+- Permissions are applied to restrict write actions to authenticated users.
+"""
+
+class BookListView(generics.ListCreateAPIView):
+    """
+    Handles listing all books and creating a new book.
+
+    - GET: Retrieve a list of all books.
+    - POST: Create a new book entry (authenticated users only).
+    """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-
-    # Permissions: Authenticated users can POST, others can only GET
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        # Additional customization can go here (e.g., logging)
         serializer.save()
 
-# View for retrieving, updating, or deleting a single book
-class BookRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+
+class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Handles retrieving, updating, and deleting a single book.
+
+    - GET: Retrieve book details by ID.
+    - PUT/PATCH: Update book information (authenticated users only).
+    - DELETE: Delete the book (authenticated users only).
+    """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-
-    # Permissions: Only authenticated users can PUT/PATCH/DELETE
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
