@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; max-width: 800px; margin: 1.5rem auto; }
+header nav a { margin-right: 1rem; text-decoration: none; }
+ul { padding: 0; list-style: none; }
+ul li { background: #f3f3f3; margin: .25rem 0; padding: .5rem; }
+form button { margin-top: .5rem; }
