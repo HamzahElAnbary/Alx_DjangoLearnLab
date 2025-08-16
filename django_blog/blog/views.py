@@ -1,58 +1,49 @@
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment
-from .forms import CommentForm
+from django.urls import reverse_lazy, reverse
+from django.db.models import Q
+from .models import Post, Comment, Tag
+from .forms import PostForm, CommentForm
 
-
-# ✅ Post Views
+# Post Views
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    ordering = ['-date_posted']
-
+    ordering = ['-created_at']
 
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
 
-
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(CreateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        form.instance.tags.set(form.cleaned_data['tags'])
+        return response
 
-
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(UpdateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        form.instance.tags.set(form.cleaned_data['tags'])
+        return response
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
-
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
     success_url = reverse_lazy('post-list')
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
 
-
-# ✅ Comment Views
-class CommentCreateView(LoginRequiredMixin, CreateView):
+# Comment Views
+class CommentCreateView(CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_form.html'
@@ -60,31 +51,42 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
         form.instance.post = post
-        form.instance.author = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.object.post.get_absolute_url()
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
 
-
-class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class CommentUpdateView(UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_form.html'
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
     def get_success_url(self):
-        return self.object.post.get_absolute_url()
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
 
-
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class CommentDeleteView(DeleteView):
     model = Comment
     template_name = 'blog/comment_confirm_delete.html'
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
     def get_success_url(self):
-        return self.object.post.get_absolute_url()
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
+
+
+# Tag Views
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(tags=tag)
+    return render(request, 'blog/post_list.html', {'posts': posts, 'tag': tag})
+
+
+# Search View
+def search_posts(request):
+    query = request.GET.get('q')
+    results = []
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, 'blog/search_results.html', {'results': results, 'query': query})

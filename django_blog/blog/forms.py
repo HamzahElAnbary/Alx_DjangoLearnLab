@@ -1,10 +1,15 @@
 from django import forms
-from .models import Comment
+from .models import Post, Comment
+from taggit.forms import TagWidget
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags']
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['author', 'content']
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write a comment...'})
+            'tags': TagWidget(),  # nice UI for tags
         }
