@@ -1,7 +1,9 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+
 
 # Custom permission to allow only owners to edit
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -12,28 +14,43 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the author
         return obj.author == request.user
 
+
 # Pagination class
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 50
 
+
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-created_at')
+    queryset = Post.objects.all().order_by("-created_at")
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'content']
+    search_fields = ["title", "content"]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all().order_by('-created_at')
+    queryset = Comment.objects.all().order_by("-created_at")
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+# Feed view – shows posts from users the current user follows
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by("-created_at")

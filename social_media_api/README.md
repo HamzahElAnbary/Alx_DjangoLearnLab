@@ -41,3 +41,13 @@ bio
 profile_picture
 
 followers
+
+### Follow / Unfollow
+POST /api/accounts/follow/{user_id}/
+POST /api/accounts/unfollow/{user_id}/
+Headers: Authorization: Token <token>
+
+### Feed
+GET /api/feed/
+Headers: Authorization: Token <token>
+Response: Paginated list of posts ordered by -created_at
