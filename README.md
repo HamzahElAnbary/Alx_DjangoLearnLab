@@ -1,4 +1,3 @@
-HEAD
 # LibraryProject
 
 This is a basic Django project created for the ALX Introduction to Django task.
@@ -73,5 +72,3 @@ followers
 POST /api/accounts/follow/{user_id}/
 POST /api/accounts/unfollow/{user_id}/
 Headers: Authorization: Token <token>
-
-e40048e (Ready for deployment)
