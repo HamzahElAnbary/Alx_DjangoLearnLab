@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Notification
 
 class NotificationSerializer(serializers.ModelSerializer):
-    actor = serializers.StringRelatedField()
+    actor = serializers.StringRelatedField(source="actor.username", read_only=True)
     target = serializers.StringRelatedField()
 
     class Meta:
