@@ -1,8 +1,9 @@
 from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .models import Post, Comment, Like
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from notifications.models import Notification
 
 
 # Custom permission to allow only owners to edit
@@ -54,3 +55,46 @@ class FeedView(generics.ListAPIView):
         user = self.request.user
         following_users = user.following.all()
         return Post.objects.filter(author__in=following_users).order_by("-created_at")
+
+class LikePostView(generics.GenericAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=404)
+
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if not created:
+            return Response({"detail": "You already liked this post"}, status=400)
+
+        # Create notification
+        if request.user != post.author:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+
+        return Response({"detail": "Post liked"}, status=201)
+
+
+class UnlikePostView(generics.GenericAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=404)
+
+        try:
+            like = Like.objects.get(user=request.user, post=post)
+            like.delete()
+            return Response({"detail": "Post unliked"}, status=200)
+        except Like.DoesNotExist:
+            return Response({"detail": "You have not liked this post"}, status=400)

@@ -1,14 +1,17 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class User(AbstractUser):
+
+class CustomUser(AbstractUser):
+    # Add extra fields here if needed
     bio = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    # Self-referential many-to-many for "following" system
     following = models.ManyToManyField(
         "self",
         symmetrical=False,
         related_name="followers",
-        blank=True
+        blank=True,
     )
 
     def __str__(self):
