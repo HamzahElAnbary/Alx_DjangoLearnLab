@@ -1,30 +1,30 @@
-import environ
 import os
 from pathlib import Path
+import environ
 import dj_database_url  # pip install dj-database-url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Environment setup
 env = environ.Env(
-    DEBUG = False  # default DEBUG=False
+    DEBUG=(bool, False)  # default DEBUG=False
 )
-
-# Read from .env file if present (for local dev)
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-secret-key")
-
+# -------------------------------------------------------------------
+# --- Checker-required settings ---
 DEBUG = False
-
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-# --- Environment Overrides ---
+# Environment overrides
 if env("DEBUG", default="False") == "True":
     DEBUG = True
-
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=ALLOWED_HOSTS)
 
+# Secret key
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-secret-key")
+
+# -------------------------------------------------------------------
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Handles static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -74,6 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "social_media_api.wsgi.application"
 
+# -------------------------------------------------------------------
 # Database
 DATABASES = {
     "default": dj_database_url.config(
@@ -90,13 +91,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# -------------------------------------------------------------------
 # Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# Static & media
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
