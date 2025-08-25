@@ -16,14 +16,15 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-secret-key")
 
 # Debug flag (default is False for safety)
-DEBUG = False  
+DEBUG = False
 
-# Allow override for local development (from .env)
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+# --- Environment Overrides ---
 if env("DEBUG", default="False") == "True":
     DEBUG = True
 
-# Allowed hosts
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=ALLOWED_HOSTS)
 
 # Application definition
 INSTALLED_APPS = [
@@ -76,9 +77,9 @@ WSGI_APPLICATION = "social_media_api.wsgi.application"
 
 # Database
 DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"  # fallback to sqlite for dev
+    "default": dj_database_url.config(
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
+        conn_max_age=600,
     )
 }
 
