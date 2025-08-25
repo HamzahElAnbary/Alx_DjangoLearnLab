@@ -1,16 +1,29 @@
+import environ
 import os
 from pathlib import Path
 import dj_database_url  # pip install dj-database-url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    DEBUG=(bool, False)  # default DEBUG=False
+)
+
+# Read from .env file if present (for local dev)
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-secret-key")
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-secret-key")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Debug flag (default is False for safety)
+DEBUG = False  
 
-ALLOWED_HOSTS = ['mezo-social-api.pythonanywhere.com', 'localhost']
+# Allow override for local development (from .env)
+if env("DEBUG", default="False") == "True":
+    DEBUG = True
+
+# Allowed hosts
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,9 +76,9 @@ WSGI_APPLICATION = "social_media_api.wsgi.application"
 
 # Database
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600,
+    "default": env.db(
+        "DATABASE_URL",
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"  # fallback to sqlite for dev
     )
 }
 
