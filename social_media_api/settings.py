@@ -6,7 +6,7 @@ import dj_database_url  # pip install dj-database-url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    DEBUG=(bool, False)  # default DEBUG=False
+    DEBUG = False  # default DEBUG=False
 )
 
 # Read from .env file if present (for local dev)
@@ -15,7 +15,6 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-secret-key")
 
-# Debug flag (default is False for safety)
 DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
